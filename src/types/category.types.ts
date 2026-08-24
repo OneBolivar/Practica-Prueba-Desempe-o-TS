@@ -10,3 +10,5 @@ export type CreateCategoryDto = Omit<Category, 'id' | 'createdAt'>;
 
 // DTO para la actualización de categorías, que permite actualizar solo los campos necesarios
 export type UpdateCategoryDto = Partial<CreateCategoryDto>; 
+
+

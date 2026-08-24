@@ -25,3 +25,5 @@ export type CreateProductDto = Omit<Product, 'id' | 'category' | 'isFavorite' | 
 
 //Payload para la actualización de productos, que permite actualizar solo los campos necesarios
 export type UpdateProductDto = Partial<CreateProductDto>;
+
+

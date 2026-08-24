@@ -13,3 +13,6 @@ export interface apiErrorResponse {
     message: string | string[] // El mensaje de error devuelto por la API
     error?: string // El mensaje de error devuelto por la API
 }
+
+
+
