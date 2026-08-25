@@ -13,7 +13,7 @@ export const apiClient = axios.create({
   },
 });
 
-// Interceptor de Request: adjunta el token en cada petición si existe
+// Interceptor de Request: agrega el token de autenticación a las cabeceras
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');

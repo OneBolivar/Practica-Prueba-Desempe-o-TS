@@ -10,6 +10,7 @@ export interface Product {
   category?: Category;
   isFavorite?: boolean;
   createdAt: Date;
+  stock: number;
 }
 
 //Payload para filtrar productos, permitiendo filtrar por página, límite de resultados, búsqueda por nombre y filtrado por categoría

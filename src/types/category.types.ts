@@ -1,8 +1,11 @@
+import type { Product } from "./product.types";
+
 export interface Category {
   id: number;
   name: string;
   description?: string;
   createdAt: Date;
+  products? : Product[];
 }
 
 // DTOs (Data Transfer Objects) para la creación y actualización de categorías 
