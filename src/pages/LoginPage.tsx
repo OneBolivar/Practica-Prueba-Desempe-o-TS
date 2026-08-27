@@ -1,5 +1,5 @@
 // src/pages/LoginPage.tsx
-import { useState, type FormEvent, type ChangeEvent } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../api/apiError';
@@ -8,82 +8,94 @@ export function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  // Estados simples para cada input
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  }
-
-  async function handleSubmit(e: FormEvent) {
+  // Función para procesar el login
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMessage(null);
-    setIsSubmitting(true);
+    setLoading(true);
 
     try {
-      await login(formData);
+      await login({ email, password });
       navigate('/');
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('Ocurrió un error inesperado.');
+        setErrorMessage('Credenciales inválidas. Verifica tus datos.');
       }
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   }
 
   return (
-    <div style={{ maxWidth: '400px', margin: '2rem auto', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>Iniciar Sesión</h2>
-
-      {errorMessage && (
-        <div style={{ background: '#ffdddd', color: '#900', padding: '0.5rem', marginBottom: '1rem', borderRadius: '4px' }}>
-          {errorMessage}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.25rem' }}>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
+    <div className="min-h-[85vh] flex items-center justify-center px-4 bg-slate-50">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-purple-950/5 border border-purple-100 p-8">
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-3 text-xl font-bold">
+            TS
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Iniciar Sesión</h2>
+          <p className="text-sm text-gray-500 mt-1">Ingresa a tu cuenta para continuar</p>
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.25rem' }}>Contraseña:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
-        </div>
+        {errorMessage && (
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg text-sm font-medium">
+            {errorMessage}
+          </div>
+        )}
 
-        <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '0.75rem', cursor: 'pointer' }}>
-          {isSubmitting ? 'Ingresando...' : 'Iniciar Sesión'}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Correo Electrónico
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="tu@email.com"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all"
+            />
+          </div>
 
-      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-        ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
-      </p>
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Contraseña
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="••••••••"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md shadow-purple-600/20 active:scale-[0.98] disabled:opacity-50 text-sm mt-2"
+          >
+            {loading ? 'Ingresando...' : 'Iniciar Sesión'}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-purple-600 font-semibold hover:underline">
+            Regístrate aquí
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

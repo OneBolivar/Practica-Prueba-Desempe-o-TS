@@ -18,10 +18,10 @@ export function CategoryDetailPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Cargar el detalle de la categoría mediante su ID
   useEffect(() => {
     async function loadCategoryDetail() {
       if (!id) return;
-
       try {
         setLoading(true);
         // Consumimos GET /categories/:id
@@ -45,66 +45,80 @@ export function CategoryDetailPage() {
     return <p>Cargando detalle de la categoría...</p>;
   }
 
+  if (loading) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-purple-600 font-medium">Cargando categoría...</p>
+      </div>
+    );
+  }
+
   if (errorMessage || !category) {
     return (
-      <div style={{ padding: '1rem', color: 'red' }}>
-        <p>{errorMessage || 'Categoría no encontrada.'}</p>
-        <Link to="/categories">Volver al listado</Link>
+      <div className="max-w-md mx-auto my-12 p-6 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-center">
+        <p className="mb-4 font-medium">{errorMessage || 'Categoría no encontrada.'}</p>
+        <Link to="/categories" className="text-purple-700 underline font-semibold text-sm">
+          Volver al listado
+        </Link>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
-      {/* Encabezado y acción condicional */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2>Categoría: {category.name}</h2>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Encabezado */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-purple-50 p-6 rounded-2xl border border-purple-100">
+        <div>
+          <span className="text-xs uppercase tracking-wider font-bold text-purple-600">Categoría</span>
+          <h1 className="text-3xl font-bold text-gray-900 mt-1">{category.name}</h1>
+          {category.description && <p className="text-gray-600 text-sm mt-2">{category.description}</p>}
+        </div>
 
-        {/* Requerimiento: Botón visible ÚNICAMENTE para usuarios autenticados (cualquier rol) */}
         {isAuthenticated && (
           <Link
-            to={`/products/new?categoryId=${category.id}`}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#28a745',
-              color: '#fff',
-              textDecoration: 'none',
-              borderRadius: '4px',
-              fontWeight: 'bold',
-            }}
+            to="/products/new"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm shadow-purple-600/20 text-sm"
           >
-            + Agregar producto a esta categoría
+            + Publicar producto
           </Link>
         )}
       </div>
 
-      {/* Listado de productos vinculados a esta categoría */}
-      <h3>Productos en esta categoría</h3>
+      {/* Lista de productos de la categoría */}
+      <h2 className="text-xl font-bold text-gray-900 mb-6">Productos en esta categoría</h2>
 
       {!category.products || category.products.length === 0 ? (
-        <p>No hay productos registrados en esta categoría aún.</p>
+        <div className="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+          <p className="text-gray-500">No hay productos en esta categoría todavía.</p>
+        </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {category.products.map((product) => (
             <div
               key={product.id}
-              style={{
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                padding: '1rem',
-                backgroundColor: '#fafafa',
-              }}
+              className="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
             >
-              <h4 style={{ margin: '0 0 0.5rem 0' }}>{product.name  }</h4>
-              <p style={{ margin: '0 0 0.5rem 0', color: '#555' }}>${product.price}</p>
-              <p style={{ fontSize: '0.9rem', color: '#777' }}>Stock: {product.stock}</p>
+              <div>
+                <Link to={`/products/${product.id}`} className="hover:text-purple-600 transition-colors">
+                  <h3 className="font-bold text-lg text-gray-900 mb-1">{product.name}</h3>
+                </Link>
+                {product.description && (
+                  <p className="text-gray-500 text-sm line-clamp-2">{product.description}</p>
+                )}
+              </div>
+              <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
+                <span className="text-lg font-bold text-purple-700">${product.price.toLocaleString()}</span>
+                <span className="text-xs text-gray-500 font-semibold">Stock: {product.stock}</span>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      <div style={{ marginTop: '2rem' }}>
-        <Link to="/categories">← Volver a Categorías</Link>
+      <div className="mt-8">
+        <Link to="/categories" className="text-purple-600 hover:text-purple-800 text-sm font-semibold">
+          ← Volver a Categorías
+        </Link>
       </div>
     </div>
   );

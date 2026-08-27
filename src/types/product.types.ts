@@ -1,30 +1,29 @@
-import type { Category } from  "./category.types";
+// src/types/product.types.ts
+import type { Category } from './category.types';
 
 export interface Product {
-  id: string;
+  id: string; // UUID
   name: string;
   description?: string;
   price: number;
-  imageUrl?: string;
-  categoryId: number;
+  stock: number;
+  categoryId: string; // UUID (string)
   category?: Category;
+  imageUrl?: string;
   isFavorite?: boolean;
   createdAt: Date;
-  stock: number;
 }
 
-//Payload para filtrar productos, permitiendo filtrar por página, límite de resultados, búsqueda por nombre y filtrado por categoría
+// Payload para filtrar productos
 export interface ProductFilters {
-    page?: number;
-    limit?: number;
-    search?: string;
-    categoryId?: number;
+  page?: number;
+  limit?: number;
+  search?: string;
+  categoryId?: string; // UUID (string)
 }
 
-//Payload para la creación de productos, omitiendo los campos que no son necesarios al momento de crear un producto
+// Payload para crear producto
 export type CreateProductDto = Omit<Product, 'id' | 'category' | 'isFavorite' | 'createdAt'>;
 
-//Payload para la actualización de productos, que permite actualizar solo los campos necesarios
+// Payload para actualizar producto
 export type UpdateProductDto = Partial<CreateProductDto>;
-
-

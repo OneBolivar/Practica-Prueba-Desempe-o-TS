@@ -1,4 +1,3 @@
-// src/pages/CategoriesPage.tsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getCategoriesService } from '../services/categories.service';
@@ -34,47 +33,53 @@ export function CategoriesPage() {
     loadCategories();
   }, []);
 
-  if (loading) {
-    return <p>Cargando categorías...</p>;
+if (loading) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-purple-600 font-medium">Cargando categorías...</p>
+      </div>
+    );
   }
 
   if (errorMessage) {
-    return <div style={{ color: 'red', padding: '1rem' }}>{errorMessage}</div>;
+    return (
+      <div className="max-w-xl mx-auto my-8 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded text-sm">
+        {errorMessage}
+      </div>
+    );
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
-      <h2>Categorías Disponibles</h2>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8 border-b border-purple-100 pb-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Categorías</h1>
+          <p className="text-sm text-gray-500 mt-1">Explora productos clasificados por secciones</p>
+        </div>
+      </div>
 
       {categories.length === 0 ? (
-        <p>No hay categorías registradas.</p>
+        <div className="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+          <p className="text-gray-500">No hay categorías registradas.</p>
+        </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {categories.map((cat) => (
             <div
               key={cat.id}
-              style={{
-                border: '1px solid #ddd',
-                padding: '1rem',
-                borderRadius: '8px',
-                textAlign: 'center',
-              }}
+              className="bg-white border border-purple-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-purple-200 transition-all flex flex-col justify-between"
             >
-              <h3>{cat.name}</h3>
-              {/* Enlace para navegar a la vista de detalle de la categoría */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{cat.name}</h3>
+                {cat.description && (
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">{cat.description}</p>
+                )}
+              </div>
               <Link
                 to={`/categories/${cat.id}`}
-                style={{
-                  display: 'inline-block',
-                  marginTop: '0.5rem',
-                  padding: '0.5rem 1rem',
-                  background: '#007bff',
-                  color: '#fff',
-                  textDecoration: 'none',
-                  borderRadius: '4px',
-                }}
+                className="inline-block text-center bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm border border-purple-200 hover:border-transparent mt-4"
               >
-                Ver productos
+                Ver productos →
               </Link>
             </div>
           ))}
