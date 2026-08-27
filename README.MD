@@ -447,21 +447,20 @@ src/
   Se erradico el uso de console.error como unico medio de reporte. Toda excepcion
   capturada se traduce a una alerta visual accesible y entendible para el usuario.
 
-
 ======================================================================
         MODULO 7: PRUEBAS UNITARIAS Y DE INTEGRACION
 ======================================================================
 
-1. ARQUITECTURA DE ARCHIVOS CREADOS
+1. ARQUITECTURA DE ARCHIVOS CREADOS / MODIFICADOS
 ----------------------------------------------------------------------
 src/
 ├── utils/
-│   └── formatters.ts           # Funciones puras utilitarias (moneda, texto)
+│   └── formatters.ts           # Funciones puras utilitarias (formateo determinista)
 └── test/
-    ├── setup.ts                # Importacion de extensiones (@testing-library/jest-dom)
-    ├── formatters.test.ts      # Prueba Unitaria de funcion pura
-    └── LoginPage.test.tsx      # Prueba de Integracion con React Testing Library
-vite.config.ts                  # Configuracion del entorno jsdom para Vitest
+    ├── setup.ts                # Configuracion global (@testing-library/jest-dom)
+    ├── formatters.test.ts      # Prueba unitaria de logica pura
+    └── LoginPage.test.tsx      # Prueba de integracion con React Testing Library
+vite.config.ts                  # Configuracion de Vitest con entorno jsdom
 
 
 2. DETALLE DE ARCHIVOS Y CASOS DE USO
@@ -469,31 +468,36 @@ vite.config.ts                  # Configuracion del entorno jsdom para Vitest
 
 * src/utils/formatters.ts
   - Proposito: Funcion pura formatCurrency(amount) que transforma valores numericos
-    a formato monetario legible ($10.000).
-  - Casos de uso: Formateo consistente de precios en tarjetas, detalles y tablas.
+    a formato monetario legible ($1.500) mediante expresiones regulares, garantizando
+    un comportamiento determinista independiente de la configuracion regional del entorno.
+  - Casos de uso: Formateo estandar de precios en tarjetas, detalles y resumenes.
 
 * src/test/formatters.test.ts (Prueba Unitaria)
-  - Proposito: Validar la logica de formatCurrency de manera aislada.
+  - Proposito: Validar el comportamiento aislado de la funcion formatCurrency.
   - Casos de uso:
-    - Comprueba el formateo correcto de enteros positivos.
-    - Valida que numeros negativos o valores invalidos (NaN) retornen $0 de forma segura.
+    - Comprueba el formateo correcto de enteros positivos con separadores de miles.
+    - Valida que valores negativos o no numericos (NaN) retornen $0 de manera segura.
 
 * src/test/LoginPage.test.tsx (Prueba de Integracion)
-  - Proposito: Simular el flujo real de un usuario al autenticarse.
+  - Proposito: Simular el flujo real de un usuario interactuando con el formulario.
   - Casos de uso:
     - Renderiza LoginPage dentro de BrowserRouter y AuthProvider.
-    - Mockea exclusivamente la funcion loginService usando vi.spyOn (sin mockear toda la app).
-    - Simula al usuario escribiendo email y password con userEvent.type.
-    - Hace click en el boton de envio y verifica que loginService fue llamado con los datos exactos.
+    - Mockea exclusivamente la funcion loginService usando vi.spyOn y el contrato AuthResponse.
+    - Simula la escritura de credenciales con userEvent.type.
+    - Ejecuta el submit del formulario y verifica que el servicio fue invocado con los datos exactos.
+
+* vite.config.ts & src/test/setup.ts
+  - Proposito: Habilitar el runner de pruebas Vitest y configurar matchers extendidos del DOM.
+  - Casos de uso: Permite ejecutar pruebas en un entorno virtualizado similar al navegador (jsdom).
 
 
 3. JUSTIFICACIONES TECNICAS Y CUMPLIMIENTO DE CRITERIOS
 ----------------------------------------------------------------------
-- Ejecucion con Comando Unico:
-  Las pruebas se ejecutan de extremo a extremo mediante el comando standard npm test
-  (vitest run), resolviendo todas las aserciones sin bloqueos.
+- Ejecucion Limpia con Comando Unico:
+  Todas las suites de prueba se ejecutan directamente mediante `npm test` (vitest run),
+  completando todas las aserciones en verde de forma automatizada.
 
-- Mockeo Preciso y Acotado:
-  No se sobre-mockeo la aplicacion ni React Router. Se aislo unicamente la capa
-  de comunicacion externa (auth.service.ts), probando la verdadera integracion
-  entre componentes, estado y eventos del DOM.
+- Aislamiento y Mocking Controlado:
+  No se sobre-mockeo la aplicacion ni el enrutador. Se aislo unicamente la capa
+  de comunicacion HTTP (auth.service.ts), permitiendo probar la integracion real
+  entre eventos de usuario, estado reactivo y renderizado del DOM.
