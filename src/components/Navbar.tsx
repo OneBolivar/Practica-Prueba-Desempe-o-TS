@@ -1,12 +1,12 @@
-// src/components/Navbar.tsx
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export function Navbar() {
+  // Obtenemos los datos de la sesión y funciones desde el contexto
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Función para cerrar sesión y redirigir
+  // Función simple para cerrar sesión
   function handleLogout() {
     logout();
     navigate('/login');
@@ -15,7 +15,8 @@ export function Navbar() {
   return (
     <header className="bg-white border-b border-purple-100 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logotipo */}
+        
+        {/* Logotipo de la aplicación */}
         <Link to="/" className="text-xl font-black text-purple-700 tracking-tight flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-purple-500/20">
             TS
@@ -23,22 +24,45 @@ export function Navbar() {
           Tienda<span className="text-gray-900">App</span>
         </Link>
 
-        {/* Enlaces de navegación */}
-        <nav className="flex items-center gap-2 sm:gap-4 text-sm font-medium text-gray-600">
-          <Link to="/" className="px-3 py-2 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-colors">
+        {/* Enlaces de Navegación */}
+        <nav className="flex items-center gap-1 sm:gap-3 text-sm font-medium text-gray-600">
+          <Link
+            to="/"
+            className="px-3 py-2 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-colors"
+          >
             Productos
           </Link>
-          <Link to="/categories" className="px-3 py-2 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-colors">
+          
+          <Link
+            to="/categories"
+            className="px-3 py-2 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-colors"
+          >
             Categorías
           </Link>
 
+          {/* Rutas exclusivas para usuarios con sesión activa */}
           {isAuthenticated && (
             <>
-              <Link to="/products/new" className="px-3 py-2 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-colors">
+              <Link
+                to="/favorites"
+                className="px-3 py-2 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-colors"
+              >
+                Favoritos
+              </Link>
+
+              <Link
+                to="/products/new"
+                className="px-3 py-2 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-colors"
+              >
                 Publicar Producto
               </Link>
+
+              {/* Botón exclusivo para administradores */}
               {user?.role === 'admin' && (
-                <Link to="/categories/new" className="px-3 py-2 rounded-lg text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors">
+                <Link
+                  to="/categories/new"
+                  className="px-3 py-2 rounded-lg text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors font-semibold"
+                >
                   + Categoría
                 </Link>
               )}
@@ -46,7 +70,7 @@ export function Navbar() {
           )}
         </nav>
 
-        {/* Zona de usuario / botones de autenticación */}
+        {/* Sección de autenticación / perfil */}
         <div className="flex items-center gap-3">
           {isAuthenticated && user ? (
             <div className="flex items-center gap-3">
@@ -77,6 +101,7 @@ export function Navbar() {
             </div>
           )}
         </div>
+
       </div>
     </header>
   );
