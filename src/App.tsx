@@ -1,19 +1,24 @@
 // src/App.tsx
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { Navbar } from './components/Navbar';
 import { AppRouter } from './appRouter';
+import { Navbar } from './components/Navbar';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export function App() {
   return (
-    <AuthProvider>
+    <ErrorBoundary>
       <BrowserRouter>
-        <Navbar />
-        <main style={{ padding: '1rem' }}>
-          <AppRouter />
-        </main>
+        <AuthProvider>
+          <div className="min-h-screen bg-slate-50 flex flex-col text-gray-800">
+            <Navbar />
+            <main className="flex-1">
+              <AppRouter />
+            </main>
+          </div>
+        </AuthProvider>
       </BrowserRouter>
-    </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
